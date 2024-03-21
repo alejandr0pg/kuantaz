@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "11128237442c46690046fe2f644d42cd",
+    "content-hash": "265c09f7e5dd3304104cbd3ead4b9802",
     "packages": [
         {
             "name": "brick/math",
@@ -129,6 +129,64 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "darkghosthunter/rut-utils",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DarkGhostHunter/RutUtils.git",
+                "reference": "bb3b10e63d6cad1db3fa71b6e235d4c7fe6f26c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DarkGhostHunter/RutUtils/zipball/bb3b10e63d6cad1db3fa71b6e235d4c7fe6f26c1",
+                "reference": "bb3b10e63d6cad1db3fa71b6e235d4c7fe6f26c1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4||^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4.0",
+                "phpunit/phpunit": "^9.5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "helpers/helpers.php"
+                ],
+                "psr-4": {
+                    "DarkGhostHunter\\RutUtils\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Italo Baeza C.",
+                    "email": "darkghosthunter@gmail.com"
+                }
+            ],
+            "description": "A complete library for handling chilean RUTs and RUNs.",
+            "support": {
+                "issues": "https://github.com/DarkGhostHunter/RutUtils/issues",
+                "source": "https://github.com/DarkGhostHunter/RutUtils/tree/v3.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/darkghosthunter",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://ko-fi.com/DarkGhostHunter",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2021-04-21T23:53:15+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

@@ -14,4 +14,8 @@ class Record extends Model
     protected $fillable = [
         'nombre', 'url', 'publicada'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at',	
+    ];
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Number;
 
 class MaximumAmount extends Model
@@ -16,13 +17,18 @@ class MaximumAmount extends Model
         'id_beneficio', 'monto_minimo', 'monto_maximo'
     ];
 
-    public function getMontoMinimoAttribute()
+    public function benefit(): HasOne
     {
-       return Number::currency((int) $this->attributes['monto_minimo']);
+        return $this->hasOne(Benefit::class, 'id_beneficio');
     }
 
-    public function getMontoMaximoAttribute()
-    {
-       return Number::currency((int) $this->attributes['monto_maximo']);
-    }
+    // public function getMontoMinimoAttribute()
+    // {
+    //    return Number::currency((int) $this->attributes['monto_minimo']);
+    // }
+
+    // public function getMontoMaximoAttribute()
+    // {
+    //    return Number::currency((int) $this->attributes['monto_maximo']);
+    // }
 }

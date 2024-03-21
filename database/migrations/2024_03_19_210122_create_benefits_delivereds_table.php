@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('beneficios_entregados', function (Blueprint $table) {
             $table->id();
             $table->integer('id_beneficio');
-            $table->string('rut');
+            $table->string('run');
+            $table->string('dv');
             $table->integer('total');
-            $table->boolean('estado')->default(false);
+            $table->integer('estado');
             $table->date('fecha');
             $table->timestamps();
         });

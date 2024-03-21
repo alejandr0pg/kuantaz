@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -15,37 +16,33 @@ class BenefitsDelivered extends Model
     protected $table = 'beneficios_entregados';
 
     protected $fillable = [
-        'id_beneficio', 'rut', 'total', 'estado', 'fecha'
+        'id_beneficio', 'run', 'dv', 'total', 'estado', 'fecha'
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['mes'];
 
     public function benefit(): HasOne
     {
         return $this->hasOne(Benefit::class, 'id_beneficio');
     }
 
-    public function user(): HasOne
+    public function setFechaAttribute($value)
     {
-        return $this->hasOne(User::class, 'rut', 'rut');
+        $this->attributes['fecha'] =  Carbon::parse($value)->format('Y-m-d H:i:s');
     }
 
-    public function getRunAttribute()
+    /**
+     * Determine month of benefit delivered
+     */
+    protected function mes(): Attribute
     {
-       $cleanedRut = (new ChileRut)->clean($this->attributes['rut']);
-       $run = explode('-', $cleanedRut)[0];
-
-       return $run;
-    }
-
-    public function getDvAttribute()
-    {
-       $cleanedRut = (new ChileRut)->clean($this->attributes['rut']);
-       $dv = explode('-', $cleanedRut)[1];
-
-       return $dv;
-    }
-
-    public function getMesAttribute()
-    {
-        return Carbon::parse($this->attributes['fecha'])->formatLocalized('%B');
+        return new Attribute(
+            get: fn () => Carbon::parse($this->attributes['fecha'])->isoFormat('MMMM'),
+        );
     }
 }

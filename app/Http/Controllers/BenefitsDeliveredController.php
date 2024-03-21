@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Benefit;
 use App\Models\BenefitsDelivered;
-use Closure;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Number;
 use Malahierba\ChileRut\ChileRut;
 use Malahierba\ChileRut\Rules\ValidChileanRut;
 
@@ -28,14 +30,48 @@ class BenefitsDeliveredController extends Controller
 
     public function myBenefits(Request $request)
     {
-        $benefits = $request->user()->benefits();
+        $cleanedRut = (new ChileRut)->clean($request->rut);
+        list($run, $dv) = explode('-', $cleanedRut);
+
+        $benefitsDeliveredQuery = BenefitsDelivered::where([
+            ['run', '=', $run],
+            ['dv', '=', $dv],
+        ])->get();
+
+        $benefitsDeliveredFormatted = collect();
+
+        collect($benefitsDeliveredQuery->toArray())
+            ->groupBy(function (array $item) {
+                return Carbon::parse($item['fecha'])->format('Y');
+            })
+            ->map(function($benefitsByYear, $year) use ($benefitsDeliveredFormatted) {
+                $benefitsCollect = collect();
+                $total = 0;
+
+                foreach($benefitsByYear as $benefitDelivered) {
+                    $_benefit = Benefit::find($benefitDelivered['id_beneficio'])
+                                    ->with(['ficha' => fn ($query) => $query->where('publicada', true)])
+                                    ->whereRelation('maxAmount', 'monto_maximo', '<=', $benefitDelivered['total'])
+                                    ->first();
+
+                    $total += $_benefit->maxAmount->monto_maximo;
+                    $benefitsCollect->push($_benefit);
+                }
+
+                $benefitsDeliveredFormatted->push([
+                    'year' => $year,
+                    'num' => count($benefitsCollect),
+                    'totalAmount' => Number::currency((int) $total),
+                    'beneficios' => $benefitsCollect,
+                ]);
+            });
 
         return response()->json(
             [
                 'code' => 200,
                 'success' => true,
                 'data' => [
-                    'beneficios' => $benefits
+                    'beneficios' => $benefitsDeliveredFormatted
                 ]    
             ]
         );
@@ -47,7 +83,7 @@ class BenefitsDeliveredController extends Controller
     public function store(Request $request)
     {
         try {
-            $validatedData = $request->validate([
+            $request->validate([
                 'id_beneficio' => 'required|exists:beneficios,id',
                 'rut' => [
                     'required', 
@@ -55,11 +91,21 @@ class BenefitsDeliveredController extends Controller
                     'exists:users,rut'
                 ],
                 'total' => 'required|numeric',
-                'estado' => 'required|boolean',
+                'estado' => 'required|numeric',
                 'fecha' => 'required|date',
             ]);
-        
-            $benefitsDelivered = BenefitsDelivered::create($validatedData);
+            
+            $cleanedRut = (new ChileRut)->clean($request->rut);
+            list($run, $dv) = explode('-', $cleanedRut);
+
+            $benefitsDelivered = new BenefitsDelivered;
+            $benefitsDelivered->id_beneficio = $request->id_beneficio;
+            $benefitsDelivered->run = $run;
+            $benefitsDelivered->dv = $dv;
+            $benefitsDelivered->fecha = $request->fecha;
+            $benefitsDelivered->estado = $request->estado;
+            $benefitsDelivered->total = $request->total;
+            $benefitsDelivered->save();
 
             return response()->json(
                 [
